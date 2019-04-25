@@ -15,12 +15,14 @@
 
 # define MAX_TETRI_NUM 26
 
+#include "libft/libft.h"
+
 typedef struct  s_tetri
 {
     char    id;
     short   tetri; //min 16 bit
-    int     width;
-    int     len;
+    short    width;
+    short     len;
 }               t_tetri;
 
 #endif
