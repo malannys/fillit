@@ -13,7 +13,9 @@
 #include <unistd.h>
 #include "fillit.h"
 
-
+/*
+** [0] - min_x, [1] - max_x, [2] - min_y, [3] - max_y
+*/
 void    check_min_max(char *str, short *min_max)
 {
     short   i;
@@ -40,22 +42,47 @@ void    check_min_max(char *str, short *min_max)
     }
 }
 
-short   check_errors(char *str)
+short   check_sides(char* s, short *min_max)
+{
+    char    i;
+    char    sides;
+    char    sharps;
+
+    sharps = 0;
+    sides = 0;
+    i = min_max[0] + min_max[2] * 5 - 1;
+    while (++i < min_max[1] + min_max[3] * 5)
+    {
+        if (s[i] == '#')
+        {
+            sharps++;
+            if (s[i + 1] == '#')
+                sides++;
+            else if (i < 14 && s[i + 5] == '#')
+                sides++;
+        }
+    }
+    return (sharps == 4 && sides == 3 ? 1 : 0)
+}
+
+short   check_places(char *str)
 {
     short   i;
-    short   j;
-
-    i = 0;
-    while (i < 21)
+	
+	i = 0;
+    while (i < 20)
     {
-        if (str[i] == '\n' && i % 5 != 4)
-            return (1);
-        if (str[i] == '#')
-        {
-            if (i % 5 == 3 && i / 5 == 3)
-                return (0);
-            if ()
+        if (str[i] != '#' && str[i] != '.' && str[i] != '\n')
+            return (-1);
+        //if (i % 5 == 4 && str[i] != '\n')
+        //    return (-1);
+        if (i % 5 != 4 && str[i] != '#' && str[i] != '.')
+            return (-1);
+        i++;
     }
+    if (str[i] != '\0' && str[i] != '\n')
+        return (-1);
+	return (str[i] == '\0' ? 1 : 0);
 }
 
 void    write_tetri(char *str, t_tetri *tetris)
@@ -64,16 +91,26 @@ void    write_tetri(char *str, t_tetri *tetris)
 
 int     reader(int fd, t_tetri *tetris)
 {
-    char    str[21 + 1]; // tetrimino 4x5 [+ \n] + \0
-    short    min_max[4];
+    char    str[22]; // tetrimino 4 * 5 [+ \n] + \0
+    short   min_max[4];
+    short   is_last;
+    short   num;
+    short   rd;
 
-    ft_bzero(str, 21);
-    while(read(fd, str, 21) >= 20)
+    is_last = 0;
+    num = 0;
+    ft_bzero(str, 22);
+    while((rd = read(fd, str, 21)) >= 20)
     {
-        check_min_max(str, min_max);
-        if (check_sides(str))
+        if (++num > 26 || is_last == 1 || (is_last = check_places(str)) == -1)
             return (1);
-        write_tetri(str, tetris);
-        ft_bzero(str, 21);
+        check_min_max(str, min_max);
+        if (check_sides(str, min_max) == -1)
+            return (1);
+        write_tetri(str, min_max, tetris);
+        ft_bzero(str, 22);
     }
+    if (rd != 0 || is_last != 1)
+        return (1);
+    return (0);
 }
