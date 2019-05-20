@@ -21,8 +21,8 @@ typedef struct  s_tetri
 {
     char    id;
     short   tetri; //min 16 bit
-    short    width;
-    short     len;
+    short   width;
+    short   len;
 }               t_tetri;
 
 #endif

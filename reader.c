@@ -62,30 +62,31 @@ short	check_sides(char* s, short *min_max)
 				sides++;
 		}
 	}
-	return (sharps == 4 && sides == 3 ? 1 : 0)
+	return (sharps == 4 && sides == 3 ? 1 : 0);
 }
 
-short   check_places(char *str)
+short   check_errors(char *str, short *min_max, short rd)
 {
 	short   i;
 	
 	i = 0;
+	if (str[4] != '\n' || str[9] != '\n' || str[14] != '\n' || str[19] != '\n')
+		return (1);
 	while (i < 20)
 	{
-		if (str[i] != '#' && str[i] != '.' && str[i] != '\n')
-			return (-1);
-		//if (i % 5 == 4 && str[i] != '\n')
-		//    return (-1);
 		if (i % 5 != 4 && str[i] != '#' && str[i] != '.')
-			return (-1);
+			return (1);
 		i++;
 	}
-	if (str[i] != '\0' && str[i] != '\n')
-		return (-1);
-	return (str[i] == '\0' ? 1 : 0);
+	if (rd == 21 && str[20] != '\n')
+		return (1);
+	check_min_max(str, min_max);
+	if (check_sides(str, min_max))
+		return (1);
+	return (0);
 }
 
-void	write_tetri(char *str, t_tetri *tetris)
+void	write_tetri(char *str, short num, short *min_max, t_tetri *tetris)
 {  
 }
 
@@ -94,23 +95,19 @@ int		reader(int fd, t_tetri *tetris)
 	char    str[22]; // tetrimino 4 * 5 [+ \n] + \0
 	short   min_max[4];
 	short   is_last;
-	short   num;
 	short   rd;
+	short	num;
 	
-	is_last = 0;
 	num = 0;
 	ft_bzero(str, 22);
 	while((rd = read(fd, str, 21)) >= 20)
 	{
-		if (++num > 26 || is_last == 1 || (is_last = check_places(str)) == -1)
+		if (++num > MAX_TETRI_NUM || check_errors(str, min_max, rd))
 			return (1);
-		check_min_max(str, min_max);
-		if (check_sides(str, min_max) == -1)
-			return (1);
-		write_tetri(str, min_max, tetris);
+		write_tetri(str, num, min_max, tetris);
 		ft_bzero(str, 22);
 	}
-	if (rd != 0 || is_last != 1)
+	if (rd != 0)
 		return (1);
 	return (0);
 }
