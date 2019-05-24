@@ -15,6 +15,19 @@
 #include "fillit.h"
 #include "libft/libft.h"
 
+void	free_map(char** map, short num)
+{
+	short	i;
+
+	i = 0;
+	while (i < num)
+	{
+		free(map[i]);
+		i++;
+	}
+	free(map);
+}
+
 void	fill_map(t_tetri *t, char **map, short size, short num)
 {
 	short	i;
@@ -35,34 +48,33 @@ void	fill_map(t_tetri *t, char **map, short size, short num)
 	}
 }
 
-short	display_map(t_tetri *t, short size, short num)
+void	display_map(t_tetri *t, short size, short num)
 {
 	char	**map;
 	char	i;
 
 	i = -1;
 	if (!(map = (char**)malloc(sizeof(char*) * size)))
-		return (1);
+		return ;
 	while (++i < size)
 	{
 		if (!(map[i] = (char*)malloc(sizeof(char) * (size + 1))))
-			return (1); // cleeaannn
+		{
+			free_map(map, i);
+			return ;
+		}
 		ft_memset(map[i], '.', size);
 	}
 	fill_map(t, map, size, num);
 	i = -1;
 	while (++i < size)
-	{
 		ft_putendl(map[i]);
-		free(map[i]);
-	}
-	free(map);
-	return (0);
+	free_map(map, size);
 }
 
 int		main(int ac, char **av)
 {
-	t_tetri	tetris[MAX_TETRI_NUM]; // 26 tetriminos
+	t_tetri	tetris[MAX_TETRI_NUM + 1]; // 26 tetriminos + 1
 	short	map[16]; // map 16 * 16 (short = 2 bytes)
 	int		fd;
 	short	num; // number of tetriminos
@@ -74,11 +86,15 @@ int		main(int ac, char **av)
 		ft_putendl("error");
 	else
 	{
+		ft_bzero(tetris, sizeof(t_tetri) * (MAX_TETRI_NUM + 1));
 		if ((num = reader(fd, tetris)) <= 0)
-			ft_putendl("error"); //and return 1
+		{
+			ft_putendl("error");
+			return (1);
+		}
 		ft_bzero(map, sizeof(short) * 16);
-		//size = filler(map, tetris, num);
-		//display_map(tetris, size, num);
+		size = filler(map, tetris, num);
+		display_map(tetris, size, num);
 	}
 	return (0);
 }
