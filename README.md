@@ -20,8 +20,8 @@ and arranges them in order to create the smallest square possible.
  - a Tetrimino is a piece of Tetris composed of 4 blocks
  - precisely 4 lines of 4 characters (+ \n)
  - each character must be either a block character('#') or an empty character ('.')
- - each block of a Tetrimino must touch at least one other block on any of his 4 sides 
-   (up, down, left and right)
+ - each block of a Tetrimino must touch at least one another block at any of its 4 sides 
+   (upper, down, left or right)
    
 **_Example of a valid file:_**
 
