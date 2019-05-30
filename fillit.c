@@ -54,11 +54,11 @@ void	display_map(t_tetri *t, short size, short num)
 	char	i;
 
 	i = -1;
-	if (!(map = (char**)malloc(sizeof(char*) * size)))
+	if (!(map = (char **)malloc(sizeof(char*) * size)))
 		return ;
 	while (++i < size)
 	{
-		if (!(map[i] = (char*)malloc(sizeof(char) * (size + 1))))
+		if (!(map[i] = (char *)malloc(sizeof(char) * (size + 1))))
 		{
 			free_map(map, i);
 			return ;

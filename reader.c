@@ -89,27 +89,30 @@ short	check_errors(char *str, short rd)
 	return (0);
 }
 
-t_tetri		write_tetri(char *str, short num, short *min_max, t_tetri *tetris)
+t_tetri		write_tetri(char *str, short num, short *min_max)
 {
-	t_tetri	tetri;
+	t_tetri	tetris;
 	short	i;
 	short	j;
 
 	i = min_max[0] - 1;
-	tetri.tetri = 0;
-	tetri.id = 'A' + num - 1;
-	tetri.len = min_max[1] - min_max[0] + 1;
-	tetri.width = min_max[3] - min_max[2] + 1;
+	tetris.tetri = 0;
+	tetris.id = 'A' + num - 1;
+	tetris.len = min_max[1] - min_max[0] + 1;
+	tetris.width = min_max[3] - min_max[2] + 1;
 	while (++i <= min_max[1])
 	{
 		j = min_max[2] - 1;
 		while (++j <= min_max[3])
 		{
 			if (str[i + 5 * j] == '#')
-				tetri.tetri |= 1L << (15 - i - 4 * j);
+			{
+				tetris.tetri |= 1L << (15 - i - 4 * j); // change coordinates to the upper left
+				tetris.tetri <<= min_max[0] + min_max[2] * 4;
+			}
 		}
 	}
-	return (tetri);
+	return (tetris);
 }
 
 short	reader(int fd, t_tetri *tetris)
@@ -128,7 +131,7 @@ short	reader(int fd, t_tetri *tetris)
 		if (++num > MAX_TETRI_NUM || check_errors(str, rd))
 			return (-1);
 		check_min_max(str, min_max);
-		tetris[num - 1] = write_tetri(str, num, min_max, tetris);
+		tetris[num - 1] = write_tetri(str, num, min_max);
 		str[20] = '\0';
 	}
 	if (rd != 0 || not_last == 1)
