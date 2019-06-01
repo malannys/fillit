@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include "fillit.h"
-#include "libft/libft.h"
+#include "./libft/libft.h"
 
 void	free_map(char** map, short num)
 {
@@ -41,8 +41,10 @@ void	fill_map(t_tetri *t, char **map, short size, short num)
 			j = -1;
 			while (++j < t[num].len)
 			{
-				if ((t[num].tetri >> (15 - (i + 4 * j))) & 1L)
+				if ((t[num].tetri >> (15 - j - 4 * i)) & 1)
+				{
 					map[t[num].row + i][t[num].col + j] = t[num].id;
+				}
 			}
 		}
 	}

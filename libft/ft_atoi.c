@@ -14,11 +14,9 @@
 
 int		ft_atoi(const char *str)
 {
-	size_t	i;
 	char	sgn;
 	long	res;
 
-	i = 0;
 	res = 0;
 	while ((*str >= 9 && *str <= 13) || *str == 32)
 		str++;

@@ -12,7 +12,7 @@
 
 #include "fillit.h"
 
-short	check_tetri(short *map, t_tetri *t, short size)
+short	check_tetri(short *map, t_tetri *t)
 {
 	return (!((*(map + t->row) & ((t->tetri & 61440) >> t->col))
 			|| (*(map + t->row + 1) & ((t->tetri << 4 & 61440) >> t->col))
@@ -20,7 +20,7 @@ short	check_tetri(short *map, t_tetri *t, short size)
 			|| (*(map + t->row + 3) & ((t->tetri << 12 & 61440) >> t->col))));
 }
 
-void	fit_del_tetri(short *map, t_tetri *t, short size)
+void	fit_del_tetri(short *map, t_tetri *t)
 {
 	*(map + t->row) ^= (t->tetri & 61440) >> t->col;
 	*(map + t->row + 1) ^= (t->tetri << 4 & 61440) >> t->col;
@@ -32,24 +32,23 @@ short	backtrack(short *map, t_tetri *t, short tetri_num, short size)
 {
 	if (t[tetri_num].id == 0)
 		return (1);
-	while (t[tetri_num].row < size - t[tetri_num].width)
+	t[tetri_num].row = 0;
+	while (t[tetri_num].row <= size - t[tetri_num].width)
 	{
 		t[tetri_num].col = 0;
-		while (t[tetri_num].col < size - t[tetri_num].len)
+		while (t[tetri_num].col <= size - t[tetri_num].len)
 		{
-			if (check_tetri(map, t + tetri_num, size))
+			if (check_tetri(map, t + tetri_num))
 				{
-					fit_del_tetri(map, t + tetri_num, size);
+					fit_del_tetri(map, t + tetri_num);
 					if (backtrack(map, t, tetri_num + 1, size))
 						return (1);
-					fit_del_tetri(map, t + tetri_num, size);
+					fit_del_tetri(map, t + tetri_num);
 				}
 			t[tetri_num].col++;
 		}
 		t[tetri_num].row++;
 	}
-	t[tetri_num].col = 0; // zeroizing the coordinates
-	t[tetri_num].row = 0;
 	return (0);
 }
 

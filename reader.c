@@ -94,22 +94,21 @@ t_tetri		write_tetri(char *str, short num, short *min_max)
 	t_tetri	tetris;
 	short	i;
 	short	j;
+	short	offset;
 
 	i = min_max[0] - 1;
 	tetris.tetri = 0;
 	tetris.id = 'A' + num - 1;
 	tetris.len = min_max[1] - min_max[0] + 1;
 	tetris.width = min_max[3] - min_max[2] + 1;
+	offset = min_max[0] + min_max[2] * 4;
 	while (++i <= min_max[1])
 	{
 		j = min_max[2] - 1;
 		while (++j <= min_max[3])
 		{
 			if (str[i + 5 * j] == '#')
-			{
-				tetris.tetri |= 1L << (15 - i - 4 * j); // change coordinates to the upper left
-				tetris.tetri <<= min_max[0] + min_max[2] * 4;
-			}
+				tetris.tetri |= 1 << (15 - i - 4 * j + offset);
 		}
 	}
 	return (tetris);
@@ -127,7 +126,7 @@ short	reader(int fd, t_tetri *tetris)
 	str[20] = '\0';
 	while ((rd = read(fd, str, 21)) >= 20)
 	{
-		not_last = rd == 21 ? 1 : 0;
+		not_last = (rd == 21) ? 1 : 0;
 		if (++num > MAX_TETRI_NUM || check_errors(str, rd))
 			return (-1);
 		check_min_max(str, min_max);
